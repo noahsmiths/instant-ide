@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/devcontainers/base:jammy
+FROM mcr.microsoft.com/devcontainers/javascript-node
 
-USER vscode
+USER node
 
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
