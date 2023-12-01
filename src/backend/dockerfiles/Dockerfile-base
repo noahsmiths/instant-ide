@@ -1,0 +1,6 @@
+FROM mcr.microsoft.com/devcontainers/base:jammy
+
+RUN ["curl", "-fsSL", "https://code-server.dev/install.sh", "|", "sh"]
+
+CMD ["code-server", "--auth", "none"]
+EXPOSE 8080
