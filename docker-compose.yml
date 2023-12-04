@@ -1,8 +1,0 @@
-services:
-  container-host:
-    build: .
-    pull_policy: build
-    restart: unless-stopped
-    network_mode: "host"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
