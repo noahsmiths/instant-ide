@@ -7,6 +7,13 @@
 	"features": {
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
 		"ghcr.io/devcontainers/features/node:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"otovo-oss.htmx-tags"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
