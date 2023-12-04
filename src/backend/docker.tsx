@@ -32,58 +32,41 @@ export async function buildImages(imageList: ImageConfig[]) {
     }
 }
 
-export async function createNewContainer(image: string, name: string) {
-    let docker = new Docker();
+export function createNewContainer(image: string, name: string) {
+    return new Promise((res, rej) => {
+        let docker = new Docker();
 
-    // let imageName = `${name}-image`;
-    // let imageBuilder = await docker.buildImage({
-    //     context: __dirname,
-    //     src: ['./dockerfiles/Dockerfile-base'],
-    // }, {dockerfile: './dockerfiles/Dockerfile-base', t: imageName});
-
-    // console.log("building...");
-    // await new Promise((resolve, reject) => {
-    //     docker.modem.followProgress(imageBuilder, (err, res) => err ? reject(err) : resolve(res));
-    // });
-
-    // console.log("built.");
-    // docker.listImages((err, imgs) => {
-    //     imgs?.forEach((info) => console.log(info));
-    //     console.log(imgs?.length);
-    // });
-    // await new Promise((res, rej)=>{setTimeout(res, 600000)});
-
-    docker.createContainer({
-        Image: "python",
-        name: 'ubuntu-test',
-        ExposedPorts: {
-            '8080/tcp': {}
-        },
-        HostConfig: {
-            PortBindings: {
-                '8080/tcp': [{HostPort: ''}]
+        docker.createContainer({
+            Image: image,
+            name: name,
+            ExposedPorts: {
+                '8080/tcp': {}
+            },
+            HostConfig: {
+                PortBindings: {
+                    '8080/tcp': [{HostPort: ''}]
+                }
+            },
+        }, async function (err, container) {
+            if (err) {
+                rej(err);
             }
-        },
-        // Cmd: ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080"]
-    }, function (err, container) {
-        console.log(err);
-        if (err || !container) return;
-        container.start(function (err, data) {
-            console.log("started");
-            console.error(err);
-            console.log(data);
+
+            try {
+                await container?.start();
+                let containerInfo = await container?.inspect();
+                let ports = containerInfo?.NetworkSettings.Ports['8080/tcp'];
+
+                if (ports && ports.length > 0) {
+                    console.log(ports[0].HostPort);
+                    res(ports[0].HostPort);
+                } else {
+                    rej('No ports opened on host');
+                }
+            } catch (err) {
+                rej(err);
+                return;
+            }
         });
     });
-
-    return;
-    // let container = await docker.run(image, ['bash', '-c', 'curl -fsSL https://code-server.dev/install.sh | sh && code-server --auth none --bind-addr 0.0.0.0:8080'], process.stdout, {
-    //     ExposedPorts: {
-    //         '8080/tcp': {}
-    //     },
-    //     HostConfig: {
-    //         PortBindings: {
-    //             '8080/tcp': [{HostPort: ''}]
-    //         }
-    //     }
-    // });
 }

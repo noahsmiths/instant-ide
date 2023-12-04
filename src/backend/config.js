@@ -2,7 +2,7 @@ export default {
     images: [
         {
             name: "base",
-            displayName: "None",
+            displayName: "Base",
             dockerfile: "./dockerfiles/Dockerfile-base",
             displayImage: ""
         },

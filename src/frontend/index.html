@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.8"></script>
+    </head>
+    <body>
+        <div
+            hx-trigger="load"
+            hx-get="/images"
+            hx-swap="outerHTML"
+        >
+            Loading images...
+        </div>
+        <dialog id="container_info_dialog">
+            <div id="container-info-dialog-body">
+                Creating...
+            </div>
+        </dialog>
+    </body>
+</html>
