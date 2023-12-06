@@ -9,7 +9,7 @@ function DevImageContainer(props: devImagePropType) {
     const { displayName, id, displayImage, onPress } = props;
 
     return (
-        <Button className=" flex flex-col w-fit h-fit pb-2 pt-3" onPress={() => onPress(id)}>
+        <Button variant="ghost" className=" flex flex-col w-fit h-fit pb-2 pt-3" onPress={() => onPress(id)}>
             <Image width={100} src={displayImage} />
             <h3 className=" text-2xl text-center">{ displayName }</h3>
         </Button>
