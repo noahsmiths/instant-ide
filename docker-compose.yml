@@ -1,5 +1,5 @@
 services:
-  instant-ide:
+  app:
     build: .
     pull_policy: build
     restart: unless-stopped
