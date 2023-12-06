@@ -1,8 +1,0 @@
-FROM mcr.microsoft.com/devcontainers/python:3
-
-USER vscode
-
-RUN curl -fsSL https://code-server.dev/install.sh | sh
-
-CMD ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080"]
-EXPOSE 8080

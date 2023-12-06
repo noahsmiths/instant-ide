@@ -4,13 +4,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import Docker from 'dockerode';
-import { ImageConfig } from './types';
+import DevImage from '../shared/DevImage.js';
 
-export async function buildImages(imageList: ImageConfig[]) {
+interface DevImageConfig extends DevImage {
+    dockerfile: string
+}
+
+export async function buildImages(imageList: DevImageConfig[]) {
     let docker = new Docker();
 
     for (let image of imageList) {
-        let imageName = image.name;
+        let imageName = image.id;
         let dockerfilePath = image.dockerfile;
 
         console.log(`Bulding ${imageName}...`);
@@ -18,11 +22,11 @@ export async function buildImages(imageList: ImageConfig[]) {
         let imageBuilder = await docker.buildImage({
             context: __dirname,
             src: [dockerfilePath],
-        }, {dockerfile: dockerfilePath, t: imageName});
+        }, {dockerfile: dockerfilePath, t: imageName, nocache: true});
         
         try {
             await new Promise((resolve, reject) => {
-                docker.modem.followProgress(imageBuilder, (err, res) => err ? reject(err) : resolve(res));
+                docker.modem.followProgress(imageBuilder, (err: any, res: any) => err ? reject(err) : resolve(res));
             });
         
             console.log(`Done building ${imageName}`);
@@ -47,22 +51,26 @@ export function createNewContainer(image: string, name: string) {
                     '8080/tcp': [{HostPort: ''}]
                 }
             },
-        }, async function (err, container) {
+        }, async function (err: any, container: any) {
             if (err) {
                 rej(err);
             }
 
             try {
                 await container?.start();
-                let containerInfo = await container?.inspect();
-                let ports = containerInfo?.NetworkSettings.Ports['8080/tcp'];
 
-                if (ports && ports.length > 0) {
-                    console.log(ports[0].HostPort);
-                    res(ports[0].HostPort);
-                } else {
-                    rej('No ports opened on host');
+                for (let i = 0; i < 5; i++) {
+                    const containerInfo = await container?.inspect();
+                    const ports = containerInfo?.NetworkSettings.Ports['8080/tcp'];
+
+                    if (ports && ports.length > 0) {
+                        console.log(ports[0].HostPort);
+                        res(ports[0].HostPort);
+                        return;
+                    }
                 }
+
+                rej('No ports opened on host');
             } catch (err) {
                 rej(err);
                 return;
