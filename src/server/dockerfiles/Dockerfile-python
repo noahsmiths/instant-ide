@@ -3,8 +3,10 @@ FROM mcr.microsoft.com/devcontainers/python:3
 USER vscode
 
 RUN curl -fsSL https://code-server.dev/install.sh | sh
-RUN code-server --install-extension ms-python.python
+RUN mkdir -p ~/.local/share/code-server/User/
 RUN echo '{"workbench.colorTheme": "Default Dark Modern"}' > ~/.local/share/code-server/User/settings.json
+
+RUN code-server --install-extension ms-python.python
 
 CMD ["code-server", "--auth", "none", "--bind-addr", "0.0.0.0:8080"]
 EXPOSE 8080
