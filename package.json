@@ -7,7 +7,7 @@
     "dev": "nodemon -w src/server -x tsx src/server/main.ts",
     "start": "NODE_ENV=production tsx src/server/main.ts",
     "build": "vite build",
-    "build-images": "tsx src/server/scripts/build_images.ts"
+    "build:images": "tsx src/server/scripts/build_images.ts"
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
