@@ -2,7 +2,7 @@ import "./App.css";
 
 import DevImage from "../shared/DevImage.js";
 import DevImageContainer from "./components/DevImageContainer.js";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Spinner, Progress } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -11,6 +11,7 @@ function App() {
     const [containerUrl, setContainerUrl] = useState<string>('');
 
     function createContainer(id: string) {
+        setContainerUrl('');
         onOpen();
 
         fetch('/api/container', {
@@ -52,7 +53,7 @@ function App() {
 
     return (
         <>
-            <div className=" flex flex-row justify-center p-4 gap-4">
+            <div className=" flex flex-row justify-center p-4 gap-4 w-full h-screen items-center">
                 {
                     devImages.map((image) => {
                         return (
@@ -61,15 +62,20 @@ function App() {
                     })
                 }
             </div>
-            <Modal isOpen={isOpen}>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}>
                 <ModalContent>
                     <ModalHeader>Remote Container</ModalHeader>
-                    <ModalBody>
+                    <ModalBody className="pb-4">
                         {
                             containerUrl ?
-                                <a className="text-lg" href={containerUrl} target="_blank">Go to container!</a>
+                                <a className="text-lg text-blue-600 hover:underline" href={containerUrl} target="_blank">Go to container!</a>
                             :
-                                <h3 className="text-lg">Loading...</h3>
+                                <Progress
+                                    size="sm"
+                                    isIndeterminate
+                                    aria-label="Loading..."
+                                    className="max-w-md"
+                                />
                         }
                     </ModalBody>
                 </ModalContent>
