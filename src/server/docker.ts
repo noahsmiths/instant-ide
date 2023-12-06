@@ -1,3 +1,8 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import Docker from 'dockerode';
 import DevImage from '../shared/DevImage.js';
 
@@ -17,7 +22,7 @@ export async function buildImages(imageList: DevImageConfig[]) {
         let imageBuilder = await docker.buildImage({
             context: __dirname,
             src: [dockerfilePath],
-        }, {dockerfile: dockerfilePath, t: imageName});
+        }, {dockerfile: dockerfilePath, t: imageName, nocache: true});
         
         try {
             await new Promise((resolve, reject) => {
@@ -53,15 +58,19 @@ export function createNewContainer(image: string, name: string) {
 
             try {
                 await container?.start();
-                let containerInfo = await container?.inspect();
-                let ports = containerInfo?.NetworkSettings.Ports['8080/tcp'];
 
-                if (ports && ports.length > 0) {
-                    console.log(ports[0].HostPort);
-                    res(ports[0].HostPort);
-                } else {
-                    rej('No ports opened on host');
+                for (let i = 0; i < 5; i++) {
+                    const containerInfo = await container?.inspect();
+                    const ports = containerInfo?.NetworkSettings.Ports['8080/tcp'];
+
+                    if (ports && ports.length > 0) {
+                        console.log(ports[0].HostPort);
+                        res(ports[0].HostPort);
+                        return;
+                    }
                 }
+
+                rej('No ports opened on host');
             } catch (err) {
                 rej(err);
                 return;
