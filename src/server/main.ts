@@ -9,25 +9,29 @@ const app = express();
 app.use(express.json());
 
 app.get('/api/images', (_, res) => {
-    res.send(config.images);
+    res.json(config.images);
 });
 
-app.post('/api/container', async (req, res) => {
-    const id = req.body.id;
+app.post('/api/container', async (req, res, next) => {
+    try {
+        const id = req.body.id;
 
-    if (id === undefined || config.images.find(image => image.id === id) === undefined) {
-        res.status(404).send(`Invalid 'id' provided`);
+        if (id === undefined || config.images.find(image => image.id === id) === undefined) {
+            res.status(404).send(`Invalid 'id' provided`);
+        }
+
+        const name = uuidv4();
+
+        const hostPort = await createNewContainer(id, name);
+        const url = `${req.protocol}://${req.hostname}:${hostPort}`;
+        console.log(url);
+
+        res.json({
+            url: url
+        });
+    } catch (err) {
+        next(err);
     }
-
-    const name = uuidv4();
-
-    const hostPort = await createNewContainer(id, name);
-    const url = `${req.protocol}://${req.hostname}:${hostPort}`;
-    console.log(url);
-
-    res.send({
-        url: url
-    });
 });
 
 ViteExpress.listen(app, 3000, () => {
