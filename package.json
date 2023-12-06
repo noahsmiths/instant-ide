@@ -7,10 +7,12 @@
     "dev": "nodemon -w src/server -x tsx src/server/main.ts",
     "start": "NODE_ENV=production tsx src/server/main.ts",
     "build": "vite build",
-    "build:images": "tsx src/server/scripts/build_images.ts"
+    "build:images": "tsx src/server/scripts/build_images.ts",
+    "build:images-and-start": "concurrently \"npm run build:images\" \"npm run start\""
   },
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
+    "concurrently": "^8.2.2",
     "dockerode": "^4.0.0",
     "express": "^4.18.2",
     "framer-motion": "^10.16.12",
